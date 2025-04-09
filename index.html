@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Weather App</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', sans-serif;
+        }
+
+        body {
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: linear-gradient(135deg, #4203a9, #90bafc);
+            transition: background 0.5s ease;
+        }
+
+        .container {
+            width: 90%;
+            max-width: 400px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            padding: 2rem;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 8px 32px rgba(31, 38, 135, 0.37);
+            border: 1px solid rgba(255, 255, 255, 0.18);
+        }
+
+        .search-box {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 2rem;
+        }
+
+        input, button {
+            padding: 12px;
+            border: none;
+            border-radius: 25px;
+            font-size: 16px;
+            outline: none;
+        }
+
+        input {
+            flex: 1;
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+        }
+
+        input::placeholder {
+            color: rgba(255, 255, 255, 0.7);
+        }
+
+        button {
+            background: #fff;
+            cursor: pointer;
+            transition: transform 0.2s ease;
+        }
+
+        button:hover {
+            transform: scale(1.05);
+        }
+
+        .weather-info {
+            color: white;
+            text-align: center;
+        }
+
+        .city {
+            font-size: 2rem;
+            margin-bottom: 1rem;
+        }
+
+        .temp {
+            font-size: 3.5rem;
+            font-weight: bold;
+            margin-bottom: 1rem;
+            transition: color 0.5s ease;
+        }
+
+        .description {
+            font-size: 1.2rem;
+            text-transform: capitalize;
+            margin-bottom: 1rem;
+        }
+
+        .details {
+            display: flex;
+            justify-content: space-around;
+            font-size: 1.1rem;
+        }
+
+        /* PageSpeed Optimizations */
+        img {
+            max-width: 100%;
+            height: auto;
+            loading: lazy;
+        }
+
+        @media (max-width: 480px) {
+            .container {
+                margin: 1rem;
+            }
+            .temp {
+                font-size: 2.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="search-box">
+            <input type="text" placeholder="Enter city name" id="cityInput">
+            <button onclick="getWeather()">Search</button>
+        </div>
+        <div class="weather-info" id="weatherInfo" style="display: none;">
+            <div class="city" id="cityName"></div>
+            <div class="temp" id="temperature"></div>
+            <div class="description" id="weatherDesc"></div>
+            <div class="details">
+                <div>Humidity: <span id="humidity"></span></div>
+                <div>Wind: <span id="windSpeed"></span></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        async function getWeather() {
+            const city = document.getElementById('cityInput').value;
+            if (!city) return;
+
+            try {
+                // Using OpenWeatherMap API (you'll need to get your own API key)
+                const apiKey = 'YOUR_API_KEY_HERE';
+                const response = await fetch(
+                    `https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${apiKey}&units=metric`
+                );
+                const data = await response.json();
+
+                if (data.cod === 200) {
+                    updateWeather(data);
+                    document.getElementById('weatherInfo').style.display = 'block';
+                } else {
+                    alert('City not found!');
+                }
+            } catch (error) {
+                console.error('Error fetching weather:', error);
+                alert('Something went wrong!');
+            }
+        }
+
+        function updateWeather(data) {
+            // Update UI
+            document.getElementById('cityName').textContent = data.name;
+            document.getElementById('temperature').textContent = `${Math.round(data.main.temp)}°C`;
+            document.getElementById('weatherDesc').textContent = data.weather[0].description;
+            document.getElementById('humidity').textContent = `${data.main.humidity}%`;
+            document.getElementById('windSpeed').textContent = `${data.wind.speed} m/s`;
+
+            // Dynamic background and temperature color based on conditions
+            const temp = data.main.temp;
+            const weather = data.weather[0].main.toLowerCase();
+            const body = document.body;
+            const tempElement = document.getElementById('temperature');
+
+            if (weather.includes('rain')) {
+                body.style.background = 'linear-gradient(135deg, #2c3e50, #3498db)';
+            } else if (weather.includes('cloud')) {
+                body.style.background = 'linear-gradient(135deg, #bdc3c7, #2c3e50)';
+            } else if (weather.includes('clear')) {
+                body.style.background = 'linear-gradient(135deg, #f1c40f, #e74c3c)';
+            }
+
+            // Temperature-based color
+            if (temp < 0) {
+                tempElement.style.color = '#3498db';
+            } else if (temp < 15) {
+                tempElement.style.color = '#2ecc71';
+            } else {
+                tempElement.style.color = '#e74c3c';
+            }
+        }
+
+        // Add enter key support
+        document.getElementById('cityInput').addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') getWeather();
+        });
+    </script>
+</body>
+</html>
