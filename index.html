@@ -53,20 +53,37 @@
             flex: 1;
             background: rgba(255, 255, 255, 0.2);
             color: white;
+            transition: background 0.3s ease, box-shadow 0.3s ease;
         }
 
+        /* FIX 1: Better placeholder contrast */
         input::placeholder {
-            color: rgba(255, 255, 255, 0.7);
+            color: rgba(255, 255, 255, 0.9);
+        }
+
+        /* FIX 2: Focus state for input */
+        input:focus {
+            background: rgba(255, 255, 255, 0.3);
+            box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.2);
         }
 
         button {
             background: #fff;
+            color: #4203a9;
+            font-weight: 600;
             cursor: pointer;
-            transition: transform 0.2s ease;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
         }
 
+        /* FIX 3: Better hover and focus states for button */
         button:hover {
             transform: scale(1.05);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+        }
+
+        button:focus {
+            outline: 2px solid rgba(255, 255, 255, 0.5);
+            outline-offset: 2px;
         }
 
         .weather-info {
@@ -96,6 +113,7 @@
             display: flex;
             justify-content: space-around;
             font-size: 1.1rem;
+            gap: 1rem;
         }
 
         /* PageSpeed Optimizations */
@@ -107,21 +125,25 @@
 
         @media (max-width: 480px) {
             .container {
-                margin: 1rem;
+                width: 95%;
+                padding: 1.5rem;
             }
             .temp {
                 font-size: 2.5rem;
+            }
+            .details {
+                font-size: 1rem;
+                flex-direction: column;
+                gap: 0.8rem;
             }
         }
     </style>
 </head>
 <body>
-<header>
-  </header>
     <div class="container">
         <div class="search-box">
-            <input type="text" placeholder="Enter city name" id="cityInput">
-            <button onclick="getWeather()">Search</button>
+            <input type="text" placeholder="Enter city name" id="cityInput" aria-label="City search input">
+            <button onclick="getWeather()" aria-label="Search for weather">Search</button>
         </div>
         <div class="weather-info" id="weatherInfo" style="display: none;">
             <div class="city" id="cityName"></div>
